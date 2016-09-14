@@ -126,3 +126,7 @@ ZXING_PATH = '/home/g10k/git/zxing'
 FILE_UPLOAD_HANDLERS = [
     'django.core.files.uploadhandler.TemporaryFileUploadHandler'
 ]
+try:
+    from project.local_settings import *
+except ImportError:
+    print("Warning: no local_settings.py")
