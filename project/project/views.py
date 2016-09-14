@@ -16,5 +16,5 @@ def upload(request):
     file_obj = request.FILES['filename']
     reader = zxing.BarCodeReader(settings.ZXING_PATH)
     barcode = reader.decode(file_obj.temporary_file_path(), try_harder=True, qr_only=False)
-    raw_text = barcode.raw
+    raw_text = barcode.raw if barcode else ''
     return JsonResponse({'text': raw_text})
