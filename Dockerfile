@@ -47,9 +47,16 @@ WORKDIR /opt/sw_zxing
 RUN pip install -r requirements.txt
 RUN cp project/local_settings.sample.py project/local_settings.py
 
+# nginx
+RUN apt-get install nginx supervisor -y
+COPY nginx_gunicorn /etc/nginx/sites-enabled/
+
 CMD test "$(ls /conf/local_settings.py)" || cp project/local_settings.sample.py /conf/local_settings.py; \
     rm project/local_settings.py;  ln -s /conf/local_settings.py project/local_settings.py; \
     rm -rf static; ln -s /static static; \
     python ./manage.py migrate; \
     python ./manage.py collectstatic --noinput; \
-    python ./manage.py runserver 0.0.0.0:8080
+    service nginx start; \
+    gunicorn project.wsgi --bind=127.0.0.1:8885 --workers=5
+#    python ./manage.py runserver 0.0.0.0:8080
+
