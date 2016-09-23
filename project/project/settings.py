@@ -125,8 +125,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media/')
 
 
-# ZXING_PATH = '/var/opt/zxing'
-ZXING_PATH = '/home/g10k/git/zxing'
+ZXING_PATH = '/var/opt/zxing'
 
 FILE_UPLOAD_HANDLERS = [
     'django.core.files.uploadhandler.TemporaryFileUploadHandler'
