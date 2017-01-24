@@ -5,4 +5,5 @@ django-rest-swagger==0.3.10
 #django-tts
 #django-cleanup==0.4.2
 gunicorn==19.6.0
+pillow==2.3.0
 

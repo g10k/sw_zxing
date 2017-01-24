@@ -44,6 +44,8 @@ RUN python setup.py install
 COPY project/ /opt/sw_zxing
 WORKDIR /opt/sw_zxing
 
+RUN apt-get update
+RUN apt-get install python-dev libjpeg8-dev python-imaging -y
 RUN pip install -r requirements.txt
 RUN cp project/local_settings.sample.py project/local_settings.py
 
@@ -58,5 +60,5 @@ CMD test "$(ls /conf/local_settings.py)" || cp project/local_settings.sample.py 
     python ./manage.py collectstatic --noinput; \
     service nginx start; \
     gunicorn project.wsgi --bind=127.0.0.1:8885 --workers=5
-#    python ./manage.py runserver 0.0.0.0:8080
+#    python ./manage.py runserver 0.0.0.0:8999
 
