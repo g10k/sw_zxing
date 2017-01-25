@@ -59,6 +59,6 @@ CMD test "$(ls /conf/local_settings.py)" || cp project/local_settings.sample.py 
     python ./manage.py migrate; \
     python ./manage.py collectstatic --noinput; \
     service nginx start; \
-    gunicorn project.wsgi --bind=127.0.0.1:8080 --workers=5
+    gunicorn project.wsgi --bind=0.0.0.0:8080 --workers=5
 #    python ./manage.py runserver 0.0.0.0:8999
 
