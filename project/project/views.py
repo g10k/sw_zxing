@@ -10,6 +10,17 @@ import shutil
 import re
 
 
+def clear_tmp_dir(folder):
+    for the_file in os.listdir(folder):
+        file_path = os.path.join(folder, the_file)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+            #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+        except Exception as e:
+            print(e)
+
+
 @api_view(['post'])
 def upload(request):
     '''
@@ -38,7 +49,6 @@ def upload(request):
             barcode = reader.decode(tmp_path, try_harder=True, qr_only=False)
             if barcode and re.findall(r'\d{10}', barcode.raw):
                 raw_text = barcode.raw
-                os.remove(tmp_path)
                 break
-            os.remove(tmp_path)
+    clear_tmp_dir(tempfile.gettempdir())
     return JsonResponse({'text': raw_text})
