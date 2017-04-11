@@ -10,17 +10,6 @@ import shutil
 import re
 
 
-def clear_tmp_dir(folder):
-    for the_file in os.listdir(folder):
-        file_path = os.path.join(folder, the_file)
-        try:
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
-            #elif os.path.isdir(file_path): shutil.rmtree(file_path)
-        except Exception as e:
-            print(e)
-
-
 @api_view(['post'])
 def upload(request):
     '''
@@ -30,19 +19,18 @@ def upload(request):
         - name: filename
           type: file
     '''
+
     file_obj = request.FILES['filename']
     reader = zxing.BarCodeReader(settings.ZXING_PATH)
-    barcode = reader.decode(file_obj.temporary_file_path(), try_harder=True, qr_only=False)
+    upload_file = file_obj.temporary_file_path()
+    barcode = reader.decode(upload_file, try_harder=True, qr_only=False)
     raw_text = ''
-
     if barcode and re.findall(r'\d{10}', barcode.raw):
         raw_text = barcode.raw
     else:
         _, tmp_path_jpeg_original = tempfile.mkstemp(suffix='.jpg')
-
         # сохраним файл в /tmp/tmpcLDOaX.jpeg
-        shutil.copy(file_obj.temporary_file_path(), tmp_path_jpeg_original)
-
+        shutil.copy(upload_file, tmp_path_jpeg_original)
         for degrees in [30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]:
             _, tmp_path = tempfile.mkstemp(suffix='.jpg')
             tmp_img_object = Image.open(tmp_path_jpeg_original).rotate(degrees).save(tmp_path)
@@ -50,5 +38,12 @@ def upload(request):
             if barcode and re.findall(r'\d{10}', barcode.raw):
                 raw_text = barcode.raw
                 break
-    clear_tmp_dir(tempfile.gettempdir())
+            else:
+                if os.path.isfile(tmp_path):
+                    os.unlink(tmp_path)
+        if os.path.isfile(tmp_path_jpeg_original):
+            os.unlink(tmp_path_jpeg_original)
+    file_obj.close()
+    if os.path.isfile(upload_file):
+        os.unlink(upload_file)
     return JsonResponse({'text': raw_text})
