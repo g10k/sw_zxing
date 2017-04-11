@@ -1,4 +1,6 @@
 # docker run -v $PWD:conf:/conf
+
+# docker run -it --name=mis_mm_zxing_2602  --volume="/var/docker/mis_mm_zxing_rotated/log_rotated:/var/log:rw"  --volume="/var/www/mis_mm_zxing_rotated/static:/static:rw" --volume="/var/docker/mis_mm_zxing_rotated/data:/data:rw" --volume="/var/docker/mis_mm_zxing_rotated/conf:/conf:rw" -p 0.0.0.0:8988:8080/tcp g10k/sw_zxing:rotated bash
 FROM ubuntu:14.04
 MAINTAINER Sergey Vlasov <g10k@soft-way.biz>
 ENV DEBIAN_FRONTEND=noninteractive
@@ -51,7 +53,9 @@ RUN cp project/local_settings.sample.py project/local_settings.py
 
 # nginx
 RUN apt-get install nginx supervisor -y
+RUN mkdir /var/tmp/sw_zxing
 COPY nginx_gunicorn /etc/nginx/sites-enabled/
+
 
 CMD test "$(ls /conf/local_settings.py)" || cp project/local_settings.sample.py /conf/local_settings.py; \
     rm project/local_settings.py;  ln -s /conf/local_settings.py project/local_settings.py; \
@@ -59,6 +63,7 @@ CMD test "$(ls /conf/local_settings.py)" || cp project/local_settings.sample.py 
     python ./manage.py migrate; \
     python ./manage.py collectstatic --noinput; \
     service nginx start; \
-    gunicorn project.wsgi --bind=0.0.0.0:8885 --workers=5
+    ./manage.py supervisor
+    #gunicorn project.wsgi --bind=0.0.0.0:8885 --workers=5
 #    python ./manage.py runserver 0.0.0.0:8999
 
