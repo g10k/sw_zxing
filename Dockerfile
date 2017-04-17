@@ -64,5 +64,5 @@ CMD test "$(ls /conf/local_settings.py)" || cp project/local_settings.sample.py 
     python ./manage.py migrate; \
     python ./manage.py collectstatic --noinput; \
     service nginx start; \
-    /usr/bin/supervisord -c /etc/supervisor/supervisor.conf --nodaemon
+    /usr/bin/supervisord -c /etc/supervisor/supervisord.conf --nodaemon
 
